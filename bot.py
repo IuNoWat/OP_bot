@@ -10,7 +10,7 @@ from data import data
 from credentials import handle,password
 
 
-locale.setlocale(locale.LC_ALL, 'fr_FR')
+#locale.setlocale(locale.LC_ALL, 'fr_FR')
 day=time.strftime("%d/%m", time.gmtime())
 path_to_dir=os.path.dirname(__file__)
 
@@ -24,12 +24,17 @@ for entry in data :
         to_publish.append(entry)
 
 def publish(entry) :
-    raw_img=Image.open(path_to_dir+"\\img\\"+entry["name"]+".png")
+    raw_img=Image.open(path_to_dir+"/img/"+entry["name"]+".png")
     img_byte_arr = io.BytesIO()
     raw_img.save(img_byte_arr, format='PNG')
     img_byte = img_byte_arr.getvalue()
-    txt="Nous sommes le "+time.strftime("%d %B", time.gmtime())+" et c'est l'anniversaire de "+entry["name"]+" !\n"+entry["url"]
-    client.send_image(txt,img_byte,txt)
+
+    txt=client_utils.TextBuilder()
+    txt.text("We are the "+time.strftime("%d %B", time.gmtime())+" and it's "+entry["name"]+"'s birthday !\n")
+    txt.link(entry["url"],entry["url"])
+    #txt="We are the "+time.strftime("%d %B", time.gmtime())+" and it's "+entry["name"]+"'s birthday !\n"+entry["url"]
+    
+    client.send_image(txt,img_byte,entry["name"])
 
 for entry in to_publish :
     publish(entry)
